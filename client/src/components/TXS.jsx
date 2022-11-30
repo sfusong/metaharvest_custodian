@@ -27,6 +27,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Ajax } from '@syncfusion/ej2-base';
 import { format } from 'date-fns'
+import axios from "axios";
 
 
 
@@ -39,7 +40,7 @@ let rows = [
 ];
 
 
-function createData(source, destination, amount, asset, status,statusBg, createdAt) {
+function createData(source, destination, amount, asset, status,statusBg, createdAt, type, destAddr, txHash, txId, networkFee, update, signed, aml, note, senderImage, receiverImage, assetImage) {
   return {
     source,
     destination,
@@ -48,18 +49,21 @@ function createData(source, destination, amount, asset, status,statusBg, created
     status,
     statusBg,
     createdAt,
+    senderImage,
+    receiverImage,
+    assetImage,
     history: [
       {
-        Type: "Transfer",
-        DestAddr: "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
-        TxHash: "0x3bbe99a6146ff79c25d6ba73667d84a327b8bb92da10ee50873ec4a6e454689e",
-        TxID: "0x2562a1f91567",
-        NetworkFee: "0.001ETH",
-        Amount: 6,
-        Update: "2020-01-05",
-        Signed: "Tom",
-        AML: 'N/A',
-        Note: "pls accept",
+        Type: type,
+        DestAddr: destAddr,
+        TxHash: txHash,
+        TxID: txId,
+        NetworkFee: networkFee,
+        Amount: amount,
+        Update: update,
+        Signed: signed,
+        AML: aml,
+        Note: note
       },
     ],
   };
@@ -67,11 +71,27 @@ function createData(source, destination, amount, asset, status,statusBg, created
 
 const TXS = () => {
   useEffect(() => {
-    const ajax = new Ajax();
-    ajax.send();
-    ajax.onSuccess = (data: any) => {
-      setData([]);
-    }
+
+
+      axios.get('http://localhost:8089/api/transactions',
+          {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': localToken,
+                  'Access-Control-Allow-Origin': '*',
+                  'Accept': 'application/json'
+              }
+          }
+      )
+          .then(res => {
+              let resultTransactionData = res.data;
+
+              setRows(resultTransactionData);
+          })
+          .catch(err => {
+              console.log(err);
+          })
+      console.log("useEffect");
   }, []);
 
   const [data, setData] = useState('');
@@ -80,10 +100,12 @@ const TXS = () => {
   const [amount, setAmount] = useState('');
   const [asset, setAsset] = useState('');
   const [note, setNote] = useState('');
+  const localData = JSON.parse(sessionStorage.token).data;
+  const localToken = JSON.parse(sessionStorage.token).token;
+  const [rows, setRows] = useState([]);
 
   const handleTx = () => {
-    rows = [...rows, createData(3, destination.ID, amount, asset.id, "done","#8BE78B", format(new Date(), 'yyyy-mm-dd'))]
-    setData(rows)
+    setRows([...rows, createData(3, destination.ID, amount, asset.id, "done","#8BE78B", format(new Date(), 'yyyy-mm-dd'))])
     handleClose()
   }
 
@@ -107,7 +129,7 @@ const TXS = () => {
                     <img
                       loading="eager"
                       width="30"
-                      src={userData[row.source].image}
+                      src={row.senderImage}
                       alt=""
                     />
                   </Box>
@@ -118,7 +140,7 @@ const TXS = () => {
                     <img
                       loading="eager"
                       width="30"
-                      src={userData[row.destination].image}
+                      src={row.receiverImage}
                       alt=""
                     />
                   </Box>
@@ -129,7 +151,7 @@ const TXS = () => {
                     <img
                       loading="eager"
                       width="30"
-                      src={assetsData[row.asset].image}
+                      src={row.assetImage}
                       alt=""
                     />
                   </Box>

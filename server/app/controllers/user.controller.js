@@ -3,6 +3,8 @@ const db = require("../models");
 const User = db.users;
 const Vault = db.vaults;
 const Op = db.Sequelize.Op;
+const bcrypt = require('bcrypt');
+const authJwt = require("../middleware/authJwt");
 
 // Create and Save a new User
 exports.create = (req, res) => {
@@ -16,6 +18,8 @@ exports.create = (req, res) => {
 
     // Create a User
     const user = {
+        username: req.body.username,
+        password: req.body.password,
         name: req.body.name,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -45,15 +49,15 @@ exports.findAll = (req, res) => {
     var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
     User.findAll({ where: condition })
-    .then(data => {
-        res.send(data);
-    })
-    .catch(err => {
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while retrieving users."
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving users."
+            });
         });
-    });
 };
 
 // Find a single User with an id
@@ -78,21 +82,62 @@ exports.findOneWithVaults = (req, res) => {
 }
 
 exports.createUser = (user) => {
-    return User.create({
-        name: user.name,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        label: user.label,
-        image: user.image,
-        status: user.status,
-        role: user.role
-    })
-    .then(data => {
-        return data;
-    })
-    .catch(err => {
-        return err;
-    });
+    return User.create(user)
+        .then(data => {
+            return data;
+        })
+        .catch(err => {
+            return err;
+        });
 };
+
+exports.login = (req, res) => {
+    const { username, password } = req.body;
+
+
+    User.findOne({ where: { username: username } })
+        .then(data => {
+            console.log(data);
+            if (data) {
+                bcrypt.compare(password, data.password, function (err, result) {
+                    if (result) {
+                        const token = authJwt.createToken({ id: data.id });
+                        res.status(200).send({
+                            data: data,
+                            token: token
+                        });
+                    } else {
+                        res.status(401).send({
+                            message: "Invalid Password!"
+                        });
+                    }
+                });
+            } else {
+                res.status(404).send({
+                    message: `Cannot find User with username=${username}.`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error retrieving User with username=" + username
+            });
+        });
+}
+
+exports.checkLoginStatus = (req, res) => {
+    console.log(req.session);
+    if (req.session.user) {
+        res.send(req.session.user);
+    } else {
+        res.send({ message: 'not logged in' });
+    }
+}
+
+exports.logout = (req, res) => {
+    req.session.destroy();
+    res.send({ message: 'logged out' });
+}
+
+exports.register = (req, res) => { }
 

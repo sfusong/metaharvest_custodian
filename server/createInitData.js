@@ -8,6 +8,8 @@ const transactionController = require("./app/controllers/transaction.controller"
 
 const run = async () => {
     const user1 = await userController.createUser({
+        username: "user1",
+        password: "$2b$10$.wjul86Iqdkt/siWXdJM9OwmZwe5erVXElkDpHOtRj9DihT95AX3y",
         name: "Cristiano Ronaldo dos Santos Aveiro",
         firstName: "Cristiano",
         lastName: "Ronaldo",
@@ -18,6 +20,8 @@ const run = async () => {
         role: "Customer"
     });
     const user2 = await userController.createUser({
+        username: "user2",
+        password: "$2b$10$QxT.jJxFzTiMfCXfOMGZJ.QNGcJeGiLZbz9prIX9f5S93RP/1wmzW",
         name: "Liniel Messi Cuccittini",
         firstName: "Liniel",
         lastName: "Messi",
@@ -28,6 +32,8 @@ const run = async () => {
         role: "Customer"
     });
     const user3 = await userController.createUser({
+        username: "user3",
+        password: "$2b$10$QOMWoXQXzspbGnEPuRgz7OJIVSVnokMw0BvFOkF/EPxUJCzmC1ppO",
         name: "Neymar da Silva Santos Júnior",
         firstName: "Neymar",
         lastName: "Júnior",
@@ -38,16 +44,20 @@ const run = async () => {
         role: "Customer"
     });
     const user4 = await userController.createUser({
+        username: "user4",
+        password: "$2b$10$hYHilnDFPPS8akJFJZ1GUe5x0R/cXCjXJX7hXH1e9E3JGHN.YTRc6",
         name: "Kylian Mbappé Lottin",
         firstName: "Kylian",
         lastName: "Mbappé",
         email: "mbappe@jsfund.cn",
         label: "KMB",
-        image: "avatar/mbappe.jpeg",
+        image: "avatar/mbappe.jpg",
         status: "active",
         role: "Customer"
     });
     const user5 = await userController.createUser({
+        username: "user5",
+        password: "$2b$10$9oRHLsYOs5qiqjzQ3sO5G.bgkZGR0XUmrh6hOBOQ4/.TE/08CQJjK",
         name: "Kevin De Bruyne",
         firstName: "Kevin",
         lastName: "De Bruyne",
@@ -62,7 +72,7 @@ const run = async () => {
     const asset1 = await assetController.createAsset({
         name: "Bitcoin",
         symbol: "BTC",
-        image: "./images/btc.jpg",
+        image: "asset/bitcoin.png",
         status: "active",
         price: 10000.23,
         description: "Bitcoin is a cryptocurrency invented in 2008"
@@ -71,7 +81,7 @@ const run = async () => {
     const asset2 = await assetController.createAsset({
         name: "Ethereum",
         symbol: "ETH",
-        image: "./images/eth.jpg",
+        image: "asset/ethereum.png",
         status: "active",
         price: 1000.23,
         description: "Ethereum is an open-source, public, blockchain-based distributed computing platform"
@@ -80,7 +90,7 @@ const run = async () => {
     const asset3 = await assetController.createAsset({
         name: "Litecoin",
         symbol: "LTC",
-        image: "./images/ltc.jpg",
+        image: "asset/litecoin.png",
         status: "active",
         price: 100.23,
         description: "Litecoin is a peer-to-peer cryptocurrency"
@@ -89,7 +99,7 @@ const run = async () => {
     const asset4 = await assetController.createAsset({
         name: "Ripple",
         symbol: "XRP",
-        image: "./images/xrp.jpg",
+        image: "asset/xrp.png",
         status: "active",
         price: 10.23,
         description: "Ripple is a real-time gross settlement system (RTGS)..."
@@ -97,7 +107,7 @@ const run = async () => {
 
     const vault1_1 = await vaultController.createVault({
         name: "CR7's Quant Vault",
-        image: "./images/Vualt1_1.jpg",
+        image: "vault/vault_1_1.png",
         amount: 1000,
         status: "active",
         statusBg: "#00FF00",
@@ -107,7 +117,7 @@ const run = async () => {
 
     const vault1_2 = await vaultController.createVault({
         name: "CR7's AutoCall Vault",
-        image: "./images/Vualt1_2.jpg",
+        image: "vault/vault_1_1.png",
         amount: 2000,
         status: "active",
         statusBg: "#00FF00",
@@ -117,7 +127,7 @@ const run = async () => {
 
     const vault2_1 = await vaultController.createVault({
         name: "LM10's Quant Vault",
-        image: "./images/Vualt2_1.jpg",
+        image: "vault/vault_1_1.png",
         amount: 3000,
         status: "active",
         statusBg: "#00FF00",
@@ -127,7 +137,7 @@ const run = async () => {
 
     const vault2_2 = await vaultController.createVault({
         name: "LM10's AutoCall Vault",
-        image: "./images/Vualt2_2.jpg",
+        image: "vault/vault_1_1.png",
         amount: 200,
         status: "active",
         statusBg: "#00FF00",
@@ -137,7 +147,7 @@ const run = async () => {
 
     const vault3_1 = await vaultController.createVault({
         name: "NJR's Quant Vault",
-        image: "./images/Vualt3_1.jpg",
+        image: "vault/vault_1_1.png",
         amount: 5000,
         status: "active",
         statusBg: "#00FF00",
@@ -297,7 +307,7 @@ const run = async () => {
         txType: "Transfer",
         txId: "0x2562a1f91567",
         txHash: "0x3bbe99a6146ff79c25d6ba73667d84a327b8bb92da10ee50873ec4a6e454689e",
-        txStatus: "Pending",
+        txStatus: "pending",
         fee: 0.0001,
         amount: 100,
         senderId: user1.id,
@@ -324,7 +334,7 @@ const run = async () => {
         txType: "Transfer",
         txId: "0x2562a1f91568",
         txHash: "0x3bbe99a6146ff79c25d6ba73667d84a327b8bb92da10ee50873ec4a6e454689f",
-        txStatus: "Done",
+        txStatus: "done",
         fee: 3.23,
         amount: 100,
         senderId: user2.id,
@@ -352,7 +362,7 @@ const run = async () => {
 
 
 
-    
+
 
 
 
@@ -363,5 +373,5 @@ const run = async () => {
 db.sequelize.sync({ force: true }).then(() => {
     console.log("Drop and re-sync db.");
     run();
-  });
+});
 console.log("Done!");

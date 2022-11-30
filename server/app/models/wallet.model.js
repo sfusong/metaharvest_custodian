@@ -35,7 +35,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         userName: {
             type: Sequelize.STRING
-        }        
+        }
     });
     return Wallet;
 };

@@ -23,3 +23,4 @@ export { default as Whitelist } from './Whitelist';
 export { default as Defi } from './Defi';
 export { default as Tx } from './Tx';
 export { default as Exchange } from './Exchange';
+export { default as SignIn } from './SignIn';

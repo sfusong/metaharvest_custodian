@@ -3,6 +3,7 @@ const db = require("../models");
 const Vault = db.vaults;
 const Wallet = db.wallets;
 const Op = db.Sequelize.Op;
+const authJwt = require("../middleware/authJwt");
 
 // Create and Save a new Vault
 exports.create = (req, res) => {
@@ -44,15 +45,15 @@ exports.findAll = (req, res) => {
     var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
     Vault.findAll({ where: condition })
-    .then(data => {
-        res.send(data);
-    })
-    .catch(err => {
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while retrieving vaults."
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving vaults."
+            });
         });
-    });
 }
 
 // Find a single Vault with an id
@@ -99,16 +100,43 @@ exports.findOneWithWallets = (req, res) => {
 
 //Find all Vaults with Wallets
 exports.findAllWithWallets = (req, res) => {
-    Vault.findAll({ include: ["wallets"] })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving vaults."
+    const token = req.headers["authorization"];
+
+    authJwt.verifyToken(token).then((data) => {
+        const userId = data.id;
+
+        Vault.findAll({ where: { userId: userId }, include: ["wallets"] })
+            .then(rawVault => {
+                let totalAmount = 0;
+                console.log(typeof total_amout);
+                let resultVaultData = rawVault.map((vault) => {
+                    totalAmount = totalAmount + parseFloat(vault.amount);
+                    let accounts = vault.wallets.map((wallet) => {
+                        return {
+                            assetName: wallet.assetSymbol,
+                            addr: wallet.address
+                        }
+                    })
+
+                    return createData(vault.image, vault.name, vault.amount, vault.status, vault.updatedAt, accounts)
+                })
+
+                res.send({
+                    vaultData: resultVaultData, 
+                    totalAmount: totalAmount});
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message:
+                        err.message || "Some error occurred while retrieving vaults."
+                });
             });
+    }).catch((err) => {
+        res.status(500).send({
+            message:
+                err.message || "Some error occurred while retrieving vaults."
         });
+    });
 }
 
 
@@ -121,4 +149,16 @@ exports.createVault = (vault) => {
         .catch(err => {
             throw new Error(err);
         });
+}
+
+function createData(image, name, amount, status, updateAt, Accounts) {
+    return {
+        image: image,
+        name: name,
+        amount: amount,
+        status: status,
+        statusBg: status === "active" ? "green" : "red",
+        updateAt: updateAt,
+        Accounts: Accounts,
+    };
 }

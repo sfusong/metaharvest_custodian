@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 
 async function loginUser(credentials) {
-  return fetch('http://localhost:8080/login', {
+  return fetch('http://localhost:8089/api/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -12,7 +12,6 @@ async function loginUser(credentials) {
     body: JSON.stringify(credentials)
   })
     .then(data => data.json())
-
  }
 
 
@@ -20,6 +19,8 @@ const Login = ({setToken}) => {
 
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
+  const authMsg = sessionStorage.token?"Hi "+JSON.parse(sessionStorage.token).data.firstName+"! You have logged in successfully. You can now access the protected page." : "You are not logged in. Please log in to continue.";
+  const [loginStatus,setLoginStatus] = useState(authMsg)
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -27,8 +28,15 @@ const Login = ({setToken}) => {
       username,
       password
     });
-    setToken(token);
-  }
+    if (token.token) {
+      setLoginStatus("Hi "+token.data.firstName+"! You have logged in successfully. You can now access the protected page.")
+      setToken(token);
+      window.location.href = '/';
+    }else{
+        setLoginStatus("Invalid username or password.")
+    }
+    console.log(token);
+    }
 
 
 	return (
@@ -47,12 +55,10 @@ const Login = ({setToken}) => {
           <button type="submit">Submit</button>
         </div>
       </form>
+      <div>{loginStatus}</div>
     </div>
 	);
 };
 
-Login.propTypes = {
-  setToken: PropTypes.func.isRequired
-}
 
 export default Login;

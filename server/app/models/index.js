@@ -58,7 +58,7 @@ db.wallets.belongsTo(db.users, {
   as: "user",
 });
 
-db.wallets.belongsTo(db.assets, { 
+db.wallets.belongsTo(db.assets, {
   foreignKey: "assetId",
   as: "asset",
 });
@@ -66,11 +66,11 @@ db.wallets.belongsTo(db.assets, {
 //transactions constraints
 db.transactions.belongsTo(db.users, {
   foreignKey: "senderId",
-  as: "userfrom",
+  as: "sender",
 });
 db.transactions.belongsTo(db.users, {
   foreignKey: "receiverId",
-  as: "userTo",
+  as: "receiver",
 });
 
 db.transactions.belongsTo(db.vaults, {

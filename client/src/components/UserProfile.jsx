@@ -5,9 +5,11 @@ import { Button } from '.';
 import { userProfileData } from '../data/dummy';
 import { useStateContext } from '../contexts/ContextProvider';
 import shuan from '../data/shuan.jpg';
+import LogOutButton from "./LogOutButton";
 
 const UserProfile = () => {
-  const { currentColor } = useStateContext();
+    const UserData = JSON.parse(sessionStorage.token).data;
+    const { currentColor } = useStateContext();
 
   return (
     <div className="nav-item absolute right-1 top-16 bg-white dark:bg-[#42464D] p-8 rounded-lg w-96">
@@ -24,13 +26,13 @@ const UserProfile = () => {
       <div className="flex gap-5 items-center mt-6 border-color border-b-1 pb-6">
         <img
           className="rounded-full h-24 w-18"
-          src={shuan}
+          src={UserData.image}
           alt="user-profile"
         />
         <div>
-          <p className="font-semibold text-xl dark:text-gray-200"> Shuan </p>
-          <p className="text-gray-500 text-sm dark:text-gray-400">  Customer   </p>
-          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400"> zhaoshuan01@jsfund.cn </p>
+          <p className="font-semibold text-xl dark:text-gray-200"> {UserData.firstName} </p>
+          <p className="text-gray-500 text-sm dark:text-gray-400">  {UserData.role}   </p>
+          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400"> {UserData.email} </p>
         </div>
       </div>
       <div>
@@ -52,7 +54,7 @@ const UserProfile = () => {
         ))}
       </div>
       <div className="mt-5">
-        <Button
+        <LogOutButton
           color="white"
           bgColor={currentColor}
           text="Logout"

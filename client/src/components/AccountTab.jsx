@@ -26,61 +26,63 @@ import safeguard1 from "../data/Safeguard.png"
 import Button from "@mui/material/Button"
 import { Ajax } from '@syncfusion/ej2-base';
 import {InfoAccount} from "../components";
+import axios from "axios";
 
 
 
 let rows = Vault
 
   
-function createData(name,  amount,  status, updateAt) {
+function createData(image, name, amount,  status, updateAt, Accounts) {
   return {
     image: safeguard1,
     name: name,
     amount: amount,
     status: status,
-    statusBg: "#8BE78B",
+    statusBg: status === "active" ? "green" : "red",
     updateAt: updateAt,
-    Accounts: [
-      { BTC: "1LQoWist8KkaUXSPKZHNvEyfrEkPHzSsCd",
-      ETH: "0x0716a17fbaee714f1e6ab0f9d59edbc5f09815c0",
-      USDT: "0x18709e89bd403f470088abdacebe86cc60dda12e",
-      USDC: "0xdcef968d416a41cdac0ed8702fac8128a64241a2",
-      XRP: "0x98e5b99f2483f22641c596d606c90c70d793afd2",
-      LTC: "LP98Q2gPZ9gUhoL5fDji357HPRHxVqWh6j",
-      BNB: "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",
-      Doge: "DPDLBAe3RGQ2GiPxDzhgjcmpZCZD8cSBgZ",
-      SOL: "9QgXqrgdbVU8KcpfskqJpAXKzbaYQJecgMAruSWoXDkM",
-      ADA: "addr1qyq2n3849vf94f6kdrtx47jqgsee7wakg3hwrurhcdvqcn5h6sh3ptdv6sqsakc8ndfr9ztlm8f9qjznwfhe8s2rurcq63h",
-    },      
-    ],
+    Accounts: Accounts,
   };
 }
 
 
-const AccountTab = () => {
+const AccountTab = (props) => {
 
 
 
   useEffect(() => {
 
-    const ajax = new Ajax();
-            ajax.send();
-    ajax.onSuccess = (data: any) => {
-      setData([]);
-    }
+      axios.get('http://localhost:8089/api/vaults',
+          {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': localToken,
+                  'Access-Control-Allow-Origin': '*',
+                  'Accept': 'application/json'
+              }
+          }
+      ).then((response) => {
+
+          setRows(response.data.vaultData)
+          props.setTotal(response.data.totalAmount)
+      }).catch((error) => {
+          console.log(error)
+      })
 
 
 }, []);
 
   const [data, setData] = useState('');
   const [name, setName] = useState('');
-  
+  const [rows, setRows] = useState([]);
+  const localData = JSON.parse(sessionStorage.token).data;
+  const localToken = JSON.parse(sessionStorage.token).token;
+  const [totalAmount, setTotalAmount] = useState(0);
 
   
   const handleTx = () => {
   
-  rows = [...rows, createData(name, 0,  "active", "2022-10-31")]
-  setData(rows)
+  setData([...rows, createData("",name, 0,  "active", "2022-10-31", [])]);
   setOpen(false);
 
   }
@@ -134,39 +136,13 @@ const AccountTab = () => {
                 </Typography>
                 <Table size="small" aria-label="purchases">
                   <TableHead>
-                    <TableRow>
-                      <TableCell>BTC</TableCell>
-                      </TableRow>
-                      <TableRow>
-                      <TableCell>ETH</TableCell>
-                      <TableCell>USDT</TableCell>
-                      <TableCell>USDC</TableCell>
-                      <TableCell align="right">XRP</TableCell>
-                      <TableCell align="right">LTC</TableCell>
-                      <TableCell align="right">BNB</TableCell>
-                      <TableCell align="right">Doge</TableCell>
-                      <TableCell align="right">SOL</TableCell>
-                      <TableCell align="right">ADA</TableCell>                    
-                    </TableRow>
+                    {row.Accounts.map((row) => (
+                        <TableCell>{row.assetName}</TableCell>
+                    ))}
                   </TableHead>
                   <TableBody>
-                    {row.Accounts.map((historyRow) => (
-                      <TableRow key={historyRow.BTC}>
-                        <TableCell component="th" scope="row">
-                          {historyRow.BTC}
-                        </TableCell>
-                        <TableCell>{historyRow.ETH}</TableCell>
-                        <TableCell align="right">{historyRow.USDT}</TableCell>
-                        <TableCell align="right">
-                        {historyRow.USDC}
-                        </TableCell>
-                        <TableCell align="right">{historyRow.XRP}</TableCell>
-                        <TableCell align="right">{historyRow.LTC}</TableCell>
-                        <TableCell align="right">{historyRow.BNB}</TableCell>
-                        <TableCell align="right">{historyRow.Doge}</TableCell>
-                        <TableCell align="right">{historyRow.SOL}</TableCell>
-                        <TableCell align="right">{historyRow.ADA}</TableCell>
-                      </TableRow>
+                    {row.Accounts.map((row) => (
+                        <TableCell>{row.addr}</TableCell>
                     ))}
                   </TableBody>
                 </Table>
